@@ -49,6 +49,7 @@ class Login:
         retrycount = 5
         while (not loginsuccess) and retrycount:
             result=self.passport()
+            self.result=result.text
             self.cookies = self.session.cookies
             retrycount = retrycount - 1
             if result.url=='https://passport.ustc.edu.cn/login':
