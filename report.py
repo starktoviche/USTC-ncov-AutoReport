@@ -13,7 +13,7 @@ class Report(object):
         self.data_path = data_path
 
     def report(self):
-        login=Login(self.stuid,self.password,'https://weixine.ustc.edu.cn/2020','https://weixine.ustc.edu.cn/2020/caslogin','https://weixine.ustc.edu.cn/2020/home')
+        login=Login(self.stuid,self.password,'https://weixine.ustc.edu.cn/2020/caslogin')
         if login.login():
             data = login.result.text
             data = data.encode('ascii','ignore').decode('utf-8','ignore')
