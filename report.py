@@ -1,11 +1,17 @@
 import time
-import datetime
 import re
 import argparse
 from bs4 import BeautifulSoup
 import json
 import pytz
 from ustclogin import Login
+from datetime import datetime
+from datetime import timedelta
+from datetime import timezone
+SHA_TZ = timezone( #北京时间
+    timedelta(hours=8),
+    name='Asia/Shanghai',
+)
 class Report(object):
     def __init__(self, stuid, password, data_path):
         self.stuid = stuid
@@ -29,7 +35,7 @@ class Report(object):
                 'origin': 'https://weixine.ustc.edu.cn',
                 'upgrade-insecure-requests': '1',
                 'content-type': 'application/x-www-form-urlencoded',
-                'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36',
+                'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36 Edg/99.0.1150.39',
                 'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
                 'referer': 'https://weixine.ustc.edu.cn/2020/',
                 'accept-language': 'zh-CN,zh;q=0.9',
@@ -49,12 +55,33 @@ class Report(object):
                 date = pattern.search(token.text).group()
                 print("Latest report: " + date)
                 date = date + " +0800"
-                reporttime = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S %z")
-                timenow = datetime.datetime.now(pytz.timezone('Asia/Shanghai'))
+                reporttime = datetime.strptime(date, "%Y-%m-%d %H:%M:%S %z")
+                timenow = datetime.now(pytz.timezone('Asia/Shanghai'))
                 delta = timenow - reporttime
                 print("{} second(s) before.".format(delta.seconds))
                 if delta.seconds < 120:
                     flag = True
+            headers={
+                'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36 Edg/99.0.1150.39'}
+            data=login.session.get('https://weixine.ustc.edu.cn/2020/apply/daliy',headers=headers).text
+            data = data.encode('ascii','ignore').decode('utf-8','ignore')
+            soup = BeautifulSoup(data, 'html.parser')
+            token = soup.find("input", {"name": "_token"})['value']
+            utc_now = datetime.utcnow().replace(tzinfo=timezone.utc)
+            beijing_now = utc_now.astimezone(SHA_TZ)
+            start_date='-'.join([str(beijing_now.year),str(beijing_now.month).zfill(2),str(beijing_now.day).zfill(2)])
+            delta = timedelta(days=6)
+            beijing_now+=delta
+            end_date='-'.join([str(beijing_now.year),str(beijing_now.month).zfill(2),str(beijing_now.day).zfill(2)])
+            data={
+                '_token':token,
+                'start_date':start_date,
+                'end_date':end_date}
+            if login.session.post('https://weixine.ustc.edu.cn/2020/apply/daliy/post',data=data).url=='\
+https://weixine.ustc.edu.cn/2020/apply_total?t=d' and flag==True:
+                flag=True
+            else:
+                flag=False
             if flag == False:
                 print("Report FAILED!")
             else:
