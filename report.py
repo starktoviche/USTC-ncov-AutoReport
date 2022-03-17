@@ -63,16 +63,17 @@ class Report(object):
                     flag = True
             headers={
                 'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36 Edg/99.0.1150.39'}
-            data=login.session.get('https://weixine.ustc.edu.cn/2020/apply/daliy',headers=headers).text
+            data=login.session.get('https://weixine.ustc.edu.cn/2020/apply/daliy/i',headers=headers).text
             data = data.encode('ascii','ignore').decode('utf-8','ignore')
             soup = BeautifulSoup(data, 'html.parser')
             token = soup.find("input", {"name": "_token"})['value']
             utc_now = datetime.utcnow().replace(tzinfo=timezone.utc)
             beijing_now = utc_now.astimezone(SHA_TZ)
-            start_date='-'.join([str(beijing_now.year),str(beijing_now.month).zfill(2),str(beijing_now.day).zfill(2)])
-            delta = timedelta(days=6)
+            start_date='-'.join([str(beijing_now.year),str(beijing_now.month).zfill(2),str(beijing_now.day).zfill(2)])+' '+\
+                        ':'.join([str(beijing_now.hour).zfill(2),str(beijing_now.minute).zfill(2),str(beijing_now.second).zfill(2)])
+            delta = timedelta(days=1)
             beijing_now+=delta
-            end_date='-'.join([str(beijing_now.year),str(beijing_now.month).zfill(2),str(beijing_now.day).zfill(2)])
+            end_date='-'.join([str(beijing_now.year),str(beijing_now.month).zfill(2),str(beijing_now.day).zfill(2)])+' 23:59:59'
             data={
                 '_token':token,
                 'start_date':start_date,
