@@ -77,7 +77,10 @@ class Report(object):
             data={
                 '_token':token,
                 'start_date':start_date,
-                'end_date':end_date}
+                'end_date':end_date,
+                'return_college[]':'中校区',
+                'return_college[]':'西校区',
+                't':'3'}
             if login.session.post('https://weixine.ustc.edu.cn/2020/apply/daliy/post',data=data).url=='\
 https://weixine.ustc.edu.cn/2020/apply_total?t=d' and flag==True:
                 flag=True
