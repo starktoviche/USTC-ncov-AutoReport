@@ -67,14 +67,11 @@ class Report(object):
             data = data.encode('ascii','ignore').decode('utf-8','ignore')
             soup = BeautifulSoup(data, 'html.parser')
             token = soup.find("input", {"name": "_token"})['value']
-            login.session.get('https://weixine.ustc.edu.cn/2020/apply/daliy/i?t=3',headers=headers)
-            utc_now = datetime.utcnow().replace(tzinfo=timezone.utc)
-            beijing_now = utc_now.astimezone(SHA_TZ)
-            start_date='-'.join([str(beijing_now.year),str(beijing_now.month).zfill(2),str(beijing_now.day).zfill(2)])+' '+\
-                        ':'.join([str(beijing_now.hour).zfill(2),str(beijing_now.minute).zfill(2),str(beijing_now.second).zfill(2)])
-            delta = timedelta(days=1)
-            beijing_now+=delta
-            end_date='-'.join([str(beijing_now.year),str(beijing_now.month).zfill(2),str(beijing_now.day).zfill(2)])+' 23:59:59'
+            data=login.session.get('https://weixine.ustc.edu.cn/2020/apply/daliy/i?t=3',headers=headers).text
+            data = data.encode('ascii','ignore').decode('utf-8','ignore')
+            soup = BeautifulSoup(data, 'html.parser')
+            start_date = soup.find("input", {"id": "start_date"})['value']
+            end_date = soup.find("input", {"id": "end_date"})['value']
             data={
                 '_token':token,
                 'start_date':start_date,
@@ -82,7 +79,8 @@ class Report(object):
                 'return_college[]':'西校区',
                 'return_college[]':'中校区',
                 't':'3'}
-            if login.session.post('https://weixine.ustc.edu.cn/2020/apply/daliy/post',data=data).url=='\
+            post=login.session.post('https://weixine.ustc.edu.cn/2020/apply/daliy/post',data=data)
+            if post.url=='\
 https://weixine.ustc.edu.cn/2020/apply_total?t=d' and flag==True:
                 flag=True
             else:
