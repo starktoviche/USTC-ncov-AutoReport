@@ -63,7 +63,7 @@ class Report(object):
                     flag = True
             headers={
                 'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36 Edg/99.0.1150.39'}
-            data=login.session.get('https://weixine.ustc.edu.cn/2020/apply/daliy/i',headers=headers).text
+            data=login.session.get('https://weixine.ustc.edu.cn/2020/apply/daliy',headers=headers).text
             data = data.encode('ascii','ignore').decode('utf-8','ignore')
             soup = BeautifulSoup(data, 'html.parser')
             token = soup.find("input", {"name": "_token"})['value']
