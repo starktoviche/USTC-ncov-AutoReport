@@ -1,5 +1,4 @@
 # 中国滑稽大学(University of Ridiculous of China)健康打卡平台自动打卡脚本
-# 系统出现更新，最近有些事尚未更新脚本，欢迎pull requests！
 
 ![Auto-report action](https://github.com/Kobe972/USTC-ncov-AutoReport/workflows/Auto-report%20action/badge.svg?branch=master)
 ![School](https://img.shields.io/badge/School-URC-blue.svg)
@@ -17,6 +16,7 @@
 * **记得使用前修改data.json的宿舍！**
 * **记得使用前修改data.json的宿舍！**
 * **记得使用前修改data.json的宿舍！**
+* **最好修改一下跨校区理由，不要直接照搬表单！**
 
 ## 更新记录
 
@@ -32,6 +32,7 @@
 - 20200323：表单再次发生变化，系统生成的start_date和end_date也无法通过验证，脚本进行了相应的修改。
 - 20220330：打卡页面添加宿舍信息，报备URL做了略微的修改。**记得使用前修改data.json的宿舍！**
 - 20220405：报备页面增加报备理由
+- 20220408：上次修改脚本时把daliy改成了daily（妮可经典URL拼错），用burpsuite查出问题并做了修改。同时简化了部分代码。
 
 ## 使用方法
 
