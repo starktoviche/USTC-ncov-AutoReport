@@ -31,39 +31,19 @@ class Report(object):
                 data = json.loads(data)
                 data["_token"]=token
             headers = {
-                'authority': 'weixine.ustc.edu.cn',
-                'origin': 'https://weixine.ustc.edu.cn',
-                'upgrade-insecure-requests': '1',
-                'content-type': 'application/x-www-form-urlencoded',
                 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36 Edg/99.0.1150.39',
-                'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-                'referer': 'https://weixine.ustc.edu.cn/2020/',
-                'accept-language': 'zh-CN,zh;q=0.9',
-                'Connection': 'close',
-                'cookie': "PHPSESSID=" + login.cookies.get("PHPSESSID") + ";XSRF-TOKEN=" + login.cookies.get("XSRF-TOKEN") + ";laravel_session="+login.cookies.get("laravel_session"),
             }
 
             url = "https://weixine.ustc.edu.cn/2020/daliy_report"
-            resp=login.session.post(url, data=data, headers=headers)
-            data = login.session.get("https://weixine.ustc.edu.cn/2020").text
+            data=login.session.post(url, data=data, headers=headers).text
             soup = BeautifulSoup(data, 'html.parser')
-            pattern = re.compile("202[0-9]-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}")
-            token = soup.find(
-                "span", {"style": "position: relative; top: 5px; color: #666;"})
+            token = soup.select("p.alert.alert-success")[0]
             flag = False
-            if pattern.search(token.text) is not None:
-                date = pattern.search(token.text).group()
-                print("Latest report: " + date)
-                date = date + " +0800"
-                reporttime = datetime.strptime(date, "%Y-%m-%d %H:%M:%S %z")
-                timenow = datetime.now(pytz.timezone('Asia/Shanghai'))
-                delta = timenow - reporttime
-                print("{} second(s) before.".format(delta.seconds))
-                if delta.seconds < 120:
-                    flag = True
+            if '成功' in token.text:
+                flag=True
             headers={
                 'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36 Edg/99.0.1150.39'}
-            data=login.session.get('https://weixine.ustc.edu.cn/2020/apply/daliy/i',headers=headers).text
+            data=login.session.get('https://weixine.ustc.edu.cn/2020/apply/daliy',headers=headers).text
             data = data.encode('ascii','ignore').decode('utf-8','ignore')
             soup = BeautifulSoup(data, 'html.parser')
             token = soup.find("input", {"name": "_token"})['value']
@@ -78,6 +58,7 @@ class Report(object):
                 'end_date':end_date,
                 'return_college[]':'西校区',
                 'return_college[]':'中校区',
+                'reason':'跨校区上课',
                 't':'3'}
             post=login.session.post('https://weixine.ustc.edu.cn/2020/apply/daliy/post',data=data)
             if post.url=='\
